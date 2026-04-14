@@ -11,6 +11,7 @@ public class Cliente {
     private String nombre;
     private String correo;
     private String telefono;
+    private Boolean estado;
 
     public Long getId() {
         return id;
@@ -42,5 +43,13 @@ public class Cliente {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

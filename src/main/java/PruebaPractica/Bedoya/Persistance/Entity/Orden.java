@@ -16,15 +16,13 @@ public class Orden {
     @JoinColumn(name= "cliente_id")
     private Cliente cliente;
 
-    @ManyToMany
-    @JoinTable(
-            name = "orden_producto",
-            joinColumns = @JoinColumn(name = "orden_id"),
-            inverseJoinColumns = @JoinColumn(name = "producto_id")
-    )
-    private List<Producto> productos;
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    private List<OrdenProducto> detalles;
     private LocalDate fecha;
     private Double total;
+    private Boolean estado = false;
+    @Column(name = "estado_proceso")
+    private String estadoProceso;
 
     public Long getId() {
         return id;
@@ -42,14 +40,6 @@ public class Orden {
         this.cliente = cliente;
     }
 
-    public List<Producto> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
-    }
-
     public LocalDate getFecha() {
         return fecha;
     }
@@ -64,5 +54,29 @@ public class Orden {
 
     public void setTotal(Double total) {
         this.total = total;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
+    }
+
+    public List<OrdenProducto> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<OrdenProducto> detalles) {
+        this.detalles = detalles;
+    }
+
+    public String getEstadoProceso() {
+        return estadoProceso;
+    }
+
+    public void setEstadoProceso(String estadoProceso) {
+        this.estadoProceso = estadoProceso;
     }
 }

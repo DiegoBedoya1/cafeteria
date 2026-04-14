@@ -21,6 +21,7 @@ public class ClienteRepository implements ClientRepository {
     @Override
     public Client save(Client client) {
         Cliente cliente = mapper.toCliente(client);
+        cliente.setEstado(false);
         return mapper.toClient(crud.save(cliente));
     }
 

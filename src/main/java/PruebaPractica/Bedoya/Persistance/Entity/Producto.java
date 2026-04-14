@@ -11,6 +11,7 @@ public class Producto {
     private String nombre;
     private Double precio;
     private Boolean disponible;
+    private Boolean estado;
 
     public Long getId() {
         return id;
@@ -42,5 +43,13 @@ public class Producto {
 
     public void setDisponible(Boolean disponible) {
         this.disponible = disponible;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

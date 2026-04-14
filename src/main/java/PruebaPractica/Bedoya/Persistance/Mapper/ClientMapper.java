@@ -16,7 +16,8 @@ public interface ClientMapper {
             @Mapping(source = "id",target = "clientId"),
             @Mapping(source = "nombre", target = "name"),
             @Mapping(source = "correo", target = "mail"),
-            @Mapping(source = "telefono", target = "cellphone")
+            @Mapping(source = "telefono", target = "cellphone"),
+            @Mapping(source = "estado", target = "state")
     })
     Client toClient(Cliente cliente);
 

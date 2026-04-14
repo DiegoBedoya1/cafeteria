@@ -5,6 +5,7 @@ public class Product {
     private String name;
     private Double price;
     private Boolean available;
+    private Boolean state;
 
     public Long getProductId() {
         return productId;
@@ -36,5 +37,13 @@ public class Product {
 
     public void setAvailable(Boolean available) {
         this.available = available;
+    }
+
+    public Boolean getState() {
+        return state;
+    }
+
+    public void setState(Boolean state) {
+        this.state = state;
     }
 }

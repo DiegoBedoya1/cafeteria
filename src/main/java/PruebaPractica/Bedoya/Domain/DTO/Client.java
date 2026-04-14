@@ -1,5 +1,7 @@
 package PruebaPractica.Bedoya.Domain.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,9 @@ public class Client {
     private String name;
     private String mail;
     private String cellphone;
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
+    private Boolean state;
 
     public Long getClientId() {
         return clientId;
@@ -48,5 +52,13 @@ public class Client {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public Boolean getState() {
+        return state;
+    }
+
+    public void setState(Boolean state) {
+        this.state = state;
     }
 }

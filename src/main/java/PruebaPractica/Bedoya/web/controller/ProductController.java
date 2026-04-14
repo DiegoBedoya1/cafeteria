@@ -18,9 +18,6 @@ public class ProductController {
 
     @PostMapping("/new")
     public ResponseEntity<Product> crearProducto(@RequestBody Product product){
-        System.out.println(product.getName());
-        System.out.println(product.getPrice());
-        System.out.println(product.getAvailable());
         return new ResponseEntity<>(service.save(product), HttpStatus.CREATED);
     }
 

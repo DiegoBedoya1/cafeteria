@@ -1,20 +1,51 @@
 package PruebaPractica.Bedoya.Persistance.Entity;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "orden_producto")
 public class OrdenProducto {
-    @EmbeddedId
-    private OrdenProductoPK id;
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Long id;
+   @ManyToOne
+   @JoinColumn(name = "orden_id")
+   private Orden orden;
 
-    public OrdenProductoPK getId() {
+   @ManyToOne
+   @JoinColumn(name = "producto_id")
+   private Producto producto;
+   private Integer cantidad;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(OrdenProductoPK id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Orden getOrden() {
+        return orden;
+    }
+
+    public void setOrden(Orden orden) {
+        this.orden = orden;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 }
