@@ -5,10 +5,7 @@ import PruebaPractica.Bedoya.Domain.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +22,13 @@ public class OrderController {
             return new ResponseEntity<>(service.getByClientId(id).get(),HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @PostMapping("/{id}")
+    public ResponseEntity<List<Order>> saveOrders(
+            @PathVariable long id,
+            @RequestBody List<Order> orders
+    ){
+        return new ResponseEntity<>(service.saveOrders(id,orders),HttpStatus.CREATED);
     }
 
 }

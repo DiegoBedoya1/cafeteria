@@ -9,7 +9,7 @@ import org.mapstruct.Mappings;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ClientMapper.class})
+@Mapper(componentModel = "spring", uses = {ClientMapper.class,ProductMapper.class})
 public interface OrderMapper {
     @Mappings({
             @Mapping(source = "id", target = "orderId"),

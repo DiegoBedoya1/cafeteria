@@ -63,6 +63,6 @@ public class Orden {
     }
 
     public void setTotal(Double total) {
-        total = total;
+        this.total = total;
     }
 }

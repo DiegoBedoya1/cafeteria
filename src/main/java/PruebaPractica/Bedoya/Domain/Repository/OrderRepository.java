@@ -9,5 +9,5 @@ public interface OrderRepository {
 
     Optional<List<Order>> getByClientId(long idClient);
 
-    List<Order> saveOrders(long idClient);
+    List<Order> saveOrders(long idClient, List<Order> orders);
 }

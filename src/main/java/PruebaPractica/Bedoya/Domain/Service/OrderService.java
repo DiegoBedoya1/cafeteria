@@ -16,4 +16,8 @@ public class OrderService {
     public Optional<List<Order>> getByClientId(long clientId) {
         return repository.getByClientId(clientId);
     }
+
+    public List<Order> saveOrders(long id, List<Order> orders){
+        return repository.saveOrders(id,orders);
+    }
 }
