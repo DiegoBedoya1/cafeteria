@@ -27,6 +27,9 @@ public class Factura {
     @Column(name = "metodo_pago")
     private String metodoPago;
 
+    @Column(name = "estado_pago")
+    private String estadoPago;
+
     public Long getId() {
         return id;
     }
@@ -81,5 +84,13 @@ public class Factura {
 
     public void setOrden(Orden orden) {
         this.orden = orden;
+    }
+
+    public String getEstadoPago() {
+        return estadoPago;
+    }
+
+    public void setEstadoPago(String estadoPago) {
+        this.estadoPago = estadoPago;
     }
 }

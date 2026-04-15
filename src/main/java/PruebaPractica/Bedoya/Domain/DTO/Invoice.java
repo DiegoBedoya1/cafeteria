@@ -10,6 +10,7 @@ public class Invoice {
     private String paymentMethod;
     private Boolean state;
     private Order order;
+    private String paymentState;
 
     public Long getId() {
         return id;
@@ -31,7 +32,7 @@ public class Invoice {
         return issueDate;
     }
 
-    public void setEmissionDate(LocalDateTime issueDate) {
+    public void setIssueDate(LocalDateTime issueDate) {
         this.issueDate = issueDate;
     }
 
@@ -65,5 +66,13 @@ public class Invoice {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public String getPaymentState() {
+        return paymentState;
+    }
+
+    public void setPaymentState(String paymentState) {
+        this.paymentState = paymentState;
     }
 }

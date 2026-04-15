@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface FacturaCrudRepository extends CrudRepository<Factura,Long> {
     Optional<Factura> findByOrdenId(long ordenId);
     Optional<Factura> findByNumeroFactura(String numeroFactura);
-    List<Factura> findByMetodoPago(String metodoPago);
+    List<Factura> findAllByMetodoPago(String metodoPago);
 }

@@ -22,19 +22,17 @@ public class FacturaRepository implements InvoiceRepository {
     private InvoiceMapper mapper;
 
     @Override
-    public Optional<Invoice> getByOrder(Order order) {
-        Factura factura = facturaCrud.findByOrdenId(order.getOrderId())
-                .orElseThrow(() -> new RuntimeException("no existe esa orden"));
-        return Optional.of(mapper.toInvoice(factura));
+    public Optional<Invoice> getByOrder(long orderId) {
+        return facturaCrud.findByOrdenId(orderId).map(mapper::toInvoice);
 
     }
     @Override
     public Optional<Invoice> getByNumber(String invoiceNumber) {
-        return Optional.empty();
+        return facturaCrud.findByNumeroFactura(invoiceNumber).map(mapper::toInvoice);
     }
 
     @Override
     public List<Invoice> getByMethod(String paymentMethod) {
-        return null;
+       return  mapper.toInvoices(facturaCrud.findAllByMetodoPago(paymentMethod));
     }
 }
