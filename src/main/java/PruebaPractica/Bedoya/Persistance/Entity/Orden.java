@@ -24,6 +24,13 @@ public class Orden {
     @Column(name = "estado_proceso")
     private String estadoProceso;
 
+    @Column(name = "orden_padre_id")
+    private Long ordenPadreId;
+
+    @ManyToOne
+    @JoinColumn(name = "orden_padre_id", insertable = false, updatable = false)
+    private Orden ordenPadre;
+
     public Long getId() {
         return id;
     }
@@ -78,5 +85,21 @@ public class Orden {
 
     public void setEstadoProceso(String estadoProceso) {
         this.estadoProceso = estadoProceso;
+    }
+
+    public Long getOrdenPadreId() {
+        return ordenPadreId;
+    }
+
+    public void setOrdenPadreId(Long ordenPadreId) {
+        this.ordenPadreId = ordenPadreId;
+    }
+
+    public Orden getOrdenPadre() {
+        return ordenPadre;
+    }
+
+    public void setOrdenPadre(Orden ordenPadre) {
+        this.ordenPadre = ordenPadre;
     }
 }

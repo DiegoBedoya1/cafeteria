@@ -1,15 +1,14 @@
 package PruebaPractica.Bedoya;
 
 import PruebaPractica.Bedoya.Domain.DTO.Order;
+import PruebaPractica.Bedoya.Domain.DTO.SplitDetail;
+import PruebaPractica.Bedoya.Domain.DTO.SplitRequest;
 import PruebaPractica.Bedoya.Domain.Repository.OrderRepository;
 import PruebaPractica.Bedoya.Domain.Service.InvoiceService;
 import PruebaPractica.Bedoya.Persistance.Crud.ClienteCrudRepository;
 import PruebaPractica.Bedoya.Persistance.Crud.OrdenCrudRepository;
 import PruebaPractica.Bedoya.Persistance.Crud.ProductoCrudRepository;
-import PruebaPractica.Bedoya.Persistance.Entity.Cliente;
-import PruebaPractica.Bedoya.Persistance.Entity.Orden;
-import PruebaPractica.Bedoya.Persistance.Entity.OrdenProducto;
-import PruebaPractica.Bedoya.Persistance.Entity.Producto;
+import PruebaPractica.Bedoya.Persistance.Entity.*;
 import PruebaPractica.Bedoya.Persistance.Mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -128,5 +127,63 @@ public class OrdenRepository implements OrderRepository {
 
         orden.setEstado(false);
         crudOrden.save(orden);
+    }
+
+    @Override
+    @Transactional
+    public List<Order> dividir(long ordenPadreId, List<SplitRequest> splits){
+        Orden padre = crudOrden.findById(ordenPadreId)
+                .orElseThrow(() -> new RuntimeException("la orden "+ordenPadreId+ " no existe"));
+        if(!padre.getCliente().getEstado()){
+            throw new RuntimeException("el cliente no esta disponible");
+        }
+        if(!padre.getEstado()){
+            throw new RuntimeException("esta orden no esta disponible");
+        }
+        if(!"COMPLETADA".equals(padre.getEstadoProceso())) {
+            throw new RuntimeException("no se puede dividir una orden que ya esta pagada o en pendiente");
+        }
+        double sumaHijas = 0.0;
+        List<Orden> ordenes = new ArrayList<>();
+       for(SplitRequest split: splits){
+           Orden hija = new Orden();
+           hija.setOrdenPadre(padre);
+           hija.setFecha(padre.getFecha());
+           hija.setOrdenPadreId(padre.getId());
+           hija.setCliente(padre.getCliente());
+           hija.setEstadoProceso("POR_PAGAR");
+           hija.setEstado(true);
+           double totalHija = 0.0;
+           List<OrdenProducto> detallesHija = new ArrayList<>();
+           for(SplitDetail detail: split.getDetails()){
+               if(detail.getQuantity()<=0) {
+                   throw new RuntimeException("no se admiten cantidades negativas o 0");
+               }
+               Producto producto = productoCrudRepository.findById(detail.getProductId())
+                       .orElseThrow(() -> new RuntimeException("El producto no existe"));
+               if(!(producto.getDisponible() || producto.getEstado())){
+                   throw new RuntimeException("el producto no esta disponible o no tiene stock");
+               }
+               OrdenProducto detalle = new OrdenProducto();
+               detalle.setOrden(hija);
+               detalle.setProducto(producto);
+               detalle.setCantidad(detail.getQuantity());
+               totalHija+= producto.getPrecio() * detail.getQuantity();
+               detallesHija.add(detalle);
+           }
+           hija.setTotal(totalHija);
+           hija.setDetalles(detallesHija);
+           sumaHijas+=totalHija;
+           Orden guardada = crudOrden.save(hija);
+           service.emitirFactura(guardada,"PENDIENTE");
+           ordenes.add(guardada);
+       }
+       if(Math.abs(padre.getTotal() - sumaHijas) > 0.01){
+           throw new RuntimeException("el total de las ordenes hijas no coincide con el total de las ordenes padres ");
+       }
+       padre.setEstadoProceso("DIVIDIDA");
+       crudOrden.save(padre);
+       ordenes.add(0,padre);
+       return mapperOrder.toOrders(ordenes);
     }
 }

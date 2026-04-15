@@ -17,7 +17,8 @@ public interface OrderMapper {
             @Mapping(source = "detalles", target = "details"),
             @Mapping(source = "fecha", target = "date"),
             @Mapping(source = "estado", target = "state"),
-            @Mapping(source = "estadoProceso", target = "stateProcess")
+            @Mapping(source = "estadoProceso", target = "stateProcess"),
+            @Mapping(source = "ordenPadreId", target = "parentOrderId")
     })
     Order toOrder(Orden orden);
 

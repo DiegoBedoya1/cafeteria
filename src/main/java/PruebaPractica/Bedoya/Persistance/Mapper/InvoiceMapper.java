@@ -18,7 +18,7 @@ public interface InvoiceMapper {
             @Mapping(source = "orden", target = "order"),
             @Mapping(source = "metodoPago", target = "paymentMethod"),
             @Mapping(source = "estado",target = "state"),
-            @Mapping(source = "estadoPago", target = "paymentState")
+            @Mapping(source = "estadoPago", target = "paymentState"),
     })
     Invoice toInvoice(Factura factura);
 

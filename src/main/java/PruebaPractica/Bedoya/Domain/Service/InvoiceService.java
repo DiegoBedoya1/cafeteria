@@ -51,6 +51,7 @@ public class InvoiceService {
         factura.setMetodoPago(metodo);
         factura.setOrden(orden);
         factura.setEstado(true);
+        factura.setEstadoPago("POR COBRAR");
         factura.setTotal(orden.getTotal());
         factura.setFechaEmision(LocalDateTime.now());
         Factura generada = crud.save(factura);

@@ -11,6 +11,7 @@ public class Order {
     private Double total;
     private Boolean state = false;
     private String stateProcess;
+    private Long parentOrderId;
 
     public Long getOrderId() {
         return orderId;
@@ -68,4 +69,11 @@ public class Order {
         this.stateProcess = stateProcess;
     }
 
+    public Long getParentOrderId() {
+        return parentOrderId;
+    }
+
+    public void setParentOrderId(Long parentOrderId) {
+        this.parentOrderId = parentOrderId;
+    }
 }

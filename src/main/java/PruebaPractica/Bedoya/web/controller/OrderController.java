@@ -1,6 +1,8 @@
 package PruebaPractica.Bedoya.web.controller;
 
+import PruebaPractica.Bedoya.Domain.DTO.Invoice;
 import PruebaPractica.Bedoya.Domain.DTO.Order;
+import PruebaPractica.Bedoya.Domain.DTO.SplitRequest;
 import PruebaPractica.Bedoya.Domain.Service.OrderService;
 import PruebaPractica.Bedoya.OrdenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +64,18 @@ public class OrderController {
     @DeleteMapping("/anular/{id}")
     public ResponseEntity<String> anularOrden(@PathVariable("id") long orderId) {
         try {
-            ordenRepository.anularOrden(orderId);
             return new ResponseEntity<>("Orden anulada correctamente (Eliminación lógica)", HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/dividir/{id}")
+    public ResponseEntity<List<Order>> dividir(@PathVariable("id") long ordenFacturaId,
+                                                 @RequestBody List<SplitRequest> splits){
+        return new ResponseEntity<>(ordenRepository.dividir(ordenFacturaId,splits),HttpStatus.CREATED);
+    }
+
+
 
 }

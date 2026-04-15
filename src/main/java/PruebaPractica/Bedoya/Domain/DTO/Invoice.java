@@ -11,7 +11,6 @@ public class Invoice {
     private Boolean state;
     private Order order;
     private String paymentState;
-
     public Long getId() {
         return id;
     }
