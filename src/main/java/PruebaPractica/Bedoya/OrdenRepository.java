@@ -15,9 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class OrdenRepository implements OrderRepository {
@@ -140,11 +138,15 @@ public class OrdenRepository implements OrderRepository {
         if(!padre.getEstado()){
             throw new RuntimeException("esta orden no esta disponible");
         }
-        if(!"COMPLETADA".equals(padre.getEstadoProceso())) {
-            throw new RuntimeException("no se puede dividir una orden que ya esta pagada o en pendiente");
+        if(padre.getEstadoProceso().equals("DIVIDIDA") || padre.getEstadoProceso().equals("PAGADA")) {
+            throw new RuntimeException("No se puede dividir una orden que ya está pagada o dividida");
         }
         double sumaHijas = 0.0;
         List<Orden> ordenes = new ArrayList<>();
+        Map<Long, Integer> restanteMap = new HashMap<>();
+        for (OrdenProducto op : padre.getDetalles()) {
+            restanteMap.put(op.getProducto().getId(), op.getCantidad());
+        }
        for(SplitRequest split: splits){
            Orden hija = new Orden();
            hija.setOrdenPadre(padre);
@@ -159,6 +161,15 @@ public class OrdenRepository implements OrderRepository {
                if(detail.getQuantity()<=0) {
                    throw new RuntimeException("no se admiten cantidades negativas o 0");
                }
+               OrdenProducto detallePadre = padre.getDetalles().stream()
+                       .filter(d -> d.getProducto().getId().equals(detail.getProductId()))
+                       .findFirst()
+                       .orElseThrow(()-> new RuntimeException("el  producto no forma parte de la cuenta original"));
+               if(detail.getQuantity()> detallePadre.getCantidad()){
+                   throw new RuntimeException("estas intentando pagar mas de lo que dice la cuenta");
+               }
+               int loQueHabia = restanteMap.get(detail.getProductId());
+               restanteMap.put(detail.getProductId(), loQueHabia - detail.getQuantity());
                Producto producto = productoCrudRepository.findById(detail.getProductId())
                        .orElseThrow(() -> new RuntimeException("El producto no existe"));
                if(!(producto.getDisponible() || producto.getEstado())){
@@ -178,9 +189,32 @@ public class OrdenRepository implements OrderRepository {
            service.emitirFactura(guardada,"PENDIENTE");
            ordenes.add(guardada);
        }
-       if(Math.abs(padre.getTotal() - sumaHijas) > 0.01){
-           throw new RuntimeException("el total de las ordenes hijas no coincide con el total de las ordenes padres ");
-       }
+        List<OrdenProducto> detallesRestante = new ArrayList<>();
+        double totalRestante = 0.0;
+        Orden ordenRestante = new Orden();
+        ordenRestante.setCliente(padre.getCliente());
+        ordenRestante.setFecha(padre.getFecha());
+        ordenRestante.setEstado(true);
+        ordenRestante.setEstadoProceso("PENDIENTE");
+        ordenRestante.setOrdenPadreId(padre.getId());
+
+        for (Map.Entry<Long, Integer> entry : restanteMap.entrySet()) {
+            if (entry.getValue() > 0) {
+                Producto prod = productoCrudRepository.findById(entry.getKey()).get();
+                OrdenProducto op = new OrdenProducto();
+                op.setOrden(ordenRestante);
+                op.setProducto(prod);
+                op.setCantidad(entry.getValue());
+                detallesRestante.add(op);
+                totalRestante += (prod.getPrecio() * entry.getValue());
+            }
+        }
+        if (!detallesRestante.isEmpty()) {
+            ordenRestante.setDetalles(detallesRestante);
+            ordenRestante.setTotal(totalRestante);
+            Orden restanteGuardada = crudOrden.save(ordenRestante);
+            ordenes.add(restanteGuardada);
+        }
        padre.setEstadoProceso("DIVIDIDA");
        crudOrden.save(padre);
        ordenes.add(0,padre);
