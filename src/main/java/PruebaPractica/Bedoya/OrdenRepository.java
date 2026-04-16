@@ -132,6 +132,12 @@ public class OrdenRepository implements OrderRepository {
     public List<Order> dividir(long ordenPadreId, List<SplitRequest> splits){
         Orden padre = crudOrden.findById(ordenPadreId)
                 .orElseThrow(() -> new RuntimeException("la orden "+ordenPadreId+ " no existe"));
+        int cantidadProductos = padre.getDetalles().stream()
+                .mapToInt(OrdenProducto::getCantidad)
+                .sum();
+        if(cantidadProductos<=1){
+            throw new RuntimeException("no se pueden dividir ordenes con solo un elemento");
+        }
         if(!padre.getCliente().getEstado()){
             throw new RuntimeException("el cliente no esta disponible");
         }
@@ -141,7 +147,6 @@ public class OrdenRepository implements OrderRepository {
         if(padre.getEstadoProceso().equals("DIVIDIDA") || padre.getEstadoProceso().equals("PAGADA")) {
             throw new RuntimeException("No se puede dividir una orden que ya está pagada o dividida");
         }
-        double sumaHijas = 0.0;
         List<Orden> ordenes = new ArrayList<>();
         Map<Long, Integer> restanteMap = new HashMap<>();
         for (OrdenProducto op : padre.getDetalles()) {
@@ -184,7 +189,6 @@ public class OrdenRepository implements OrderRepository {
            }
            hija.setTotal(totalHija);
            hija.setDetalles(detallesHija);
-           sumaHijas+=totalHija;
            Orden guardada = crudOrden.save(hija);
            service.emitirFactura(guardada,"PENDIENTE");
            ordenes.add(guardada);
@@ -221,3 +225,6 @@ public class OrdenRepository implements OrderRepository {
        return mapperOrder.toOrders(ordenes);
     }
 }
+
+
+

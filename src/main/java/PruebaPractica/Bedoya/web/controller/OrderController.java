@@ -73,7 +73,7 @@ public class OrderController {
     @PostMapping("/dividir/{id}")
     public ResponseEntity<List<Order>> dividir(@PathVariable("id") long ordenFacturaId,
                                                  @RequestBody List<SplitRequest> splits){
-        return new ResponseEntity<>(ordenRepository.dividir(ordenFacturaId,splits),HttpStatus.CREATED);
+        return ResponseEntity.ok(ordenRepository.dividir(ordenFacturaId,splits));
     }
 
 
